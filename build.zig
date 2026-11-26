@@ -22,7 +22,12 @@ pub fn build(b: *std.Build) void {
     // in this directory.
 
     //compile c libs that are needed
-    const translate_c = b.addTranslateC(.{
+    const translate_termiosH = b.addTranslateC(.{
+        .root_source_file = b.path("termios.h"),
+        .target = target,
+        .optimize = optimize
+    });
+    const translate_clib = b.addTranslateC(.{
         .root_source_file = b.path("c.h"),
         .target = target,
         .optimize = optimize
@@ -60,12 +65,10 @@ pub fn build(b: *std.Build) void {
             // List of modules available for import in source files part of the
             // root module.
             .imports = &.{
-                // Here "vymacs" is the name you will use in your source code to
-                // import this module (e.g. `@import("vymacs")`). The name is
-                // repeated because you are allowed to rename your imports, which
                 // can be extremely useful in case of collisions (which can happen
                 // importing modules from different packages).
-                .{ .name = "c", .module = translate_c.createModule() },
+                .{ .name = "termios.h", .module = translate_termiosH.createModule() },
+                .{ .name = "clib", .module = translate_clib.createModule() }
             },
         }),
     });
